@@ -1,3 +1,4 @@
+use crate::arbitrager::Arbitrager;
 use ethers::prelude::*;
 use ethers::providers::{MockProvider, Provider, Http};
 use std::convert::TryFrom;
@@ -9,23 +10,29 @@ use tokio::runtime::Runtime;
 
 pub async fn start_sniffing() {
     dotenv::dotenv().ok();
-    let provider = Provider::<Http>::try_from(env::var("RPC_URL").expect("RPC_URL should be set in .env")).expect("invalid provider URL");
+    let provider = Provider::<Http>::try_from(env::var("RPC_URL").expect("RPC_URL should be set in .env")).expect("Invalid provider URL");
     let client = Arc::new(provider);
 
+    let arbitrager = Arbitrager::new();
     let mut last_block_number = U64::zero();
 
     loop {
         match client.get_block_number().await {
             Ok(block_number) => {
                 if block_number > last_block_number {
-                    println!("new block: {}", block_number);
+                    println!("New block: {}", block_number);
                     last_block_number = block_number;
-                    //TO DO Code to check arbitrage
+                    match arbitrager.check_arbitrage().await {
+                        Ok(_) => {}
+                        Err(e) => eprintln!("Error checking arbitrage: {}", e),
+                    }
                 }
             }
-            Err(e) => eprintln!("error fetching block number: {}", e),
+            Err(e) => eprintln!("Error fetching block number: {}", e),
         }
-        sleep(Duration::from_millis(100)).await;
+
+        // Sleep for a few hundred milliseconds before checking again
+        sleep(Duration::from_millis(1000)).await;
     }
 }
 

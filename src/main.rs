@@ -1,3 +1,7 @@
+mod arbitrager;
+mod sushiswap_pair;
+mod uniswap_pair;
+mod factory;
 mod block_sniffer;
 
 #[tokio::main]
