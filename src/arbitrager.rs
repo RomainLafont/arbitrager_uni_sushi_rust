@@ -74,9 +74,7 @@ impl<P: Middleware + 'static> Arbitrager<P> {
 mod tests {
     use super::*;
     use ethers::providers::{Provider, Http};
-    use ethers::types::U256;
     use std::sync::Arc;
-    use std::str::FromStr;
 
     #[tokio::test]
     async fn test_find_arbitrage() {

@@ -40,7 +40,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_fetch_block_number() {
-        let mut provider = MockProvider::new();
+        let provider = MockProvider::new();
         provider.push(U64::from(12345)).unwrap();
         let client = Arc::new(Provider::new(provider));
 
