@@ -1,19 +1,17 @@
 use crate::arbitrager::Arbitrager;
 use ethers::prelude::*;
-use ethers::providers::{MockProvider, Provider, Http};
+use ethers::providers::{Provider, Http};
 use std::convert::TryFrom;
 use std::sync::Arc;
 use std::env;
 use tokio::time::{sleep, Duration};
-use ethers::types::U64;
-use tokio::runtime::Runtime;
 
 pub async fn start_sniffing() {
     dotenv::dotenv().ok();
     let provider = Provider::<Http>::try_from(env::var("RPC_URL").expect("RPC_URL should be set in .env")).expect("Invalid provider URL");
     let client = Arc::new(provider);
 
-    let arbitrager = Arbitrager::new();
+    let arbitrager = Arbitrager::new(client.clone());
     let mut last_block_number = U64::zero();
 
     loop {
@@ -35,7 +33,6 @@ pub async fn start_sniffing() {
         sleep(Duration::from_millis(1000)).await;
     }
 }
-
 
 #[cfg(test)]
 mod tests {
